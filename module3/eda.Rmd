@@ -1,0 +1,31 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(tidyverse)
+
+#df <- read.csv("https://raw.githubusercontent.com/mjdacs/data608/master/module3/data/cleaned-cdc-mortality-1999-2010-2.csv")
+
+df <- cleaned_cdc_mortality_1999_2010_2
+
+head(df)
+
+```
+```{r}
+dfSlice <- df %>% 
+  #filter(ICD.Chapter=='Diseases of the circulatory system') %>% 
+  filter(Year==2010) %>% 
+  arrange(desc(Crude.Rate))
+head(dfSlice)
+```
+
+```{r}
+ggplot(dfSlice, aes(x = reorder(State, Crude.Rate), y = Crude.Rate)) +
+  geom_bar(stat = "identity") +
+  coord_flip()
+
+```
+
