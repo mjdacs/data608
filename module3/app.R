@@ -34,8 +34,8 @@ server <- function(input, output) {
       coord_flip() +
       scale_y_continuous(labels = scales::comma) +
       theme(text = element_text(size = 8)) +
-      labs(title = "Crude Disease Rate Per 100,000 By Year",
-           subtitle = "Please select a disease type and year from the menu",
+      labs(title = "Crude Disease Rate Per 100,000",
+           subtitle = paste0(input$type," for the year ", input$year),
            caption = "mdac",
            x = "State", 
            y = "Rate")
@@ -52,8 +52,14 @@ server <- function(input, output) {
       filter(ICD.Chapter==input$type)
     
     ggplot() +
-      geom_line(data = state.rate, aes(x = Year, y = Crude.Rate), color = "blue") +
-      geom_line(data = natl.rate, aes(x = Year, y = Natl.Avg), color = "orange")
+      geom_line(data = state.rate, aes(x = Year, y = Crude.Rate, color = "blue"), size = 2) +
+      geom_line(data = natl.rate, aes(x = Year, y = Natl.Avg, color = "orange"), size = 2) +
+      scale_color_discrete(name = "Averages", labels = c("National", paste0("State: ", input$state))) +
+      labs(title = "State Disease Rate Compared to National Average",
+           subtitle = paste0("Disease Type: ", input$type),
+           caption = "mdac",
+           x = "Year", 
+           y = "Rate")
   })
   
 }
