@@ -1,0 +1,10 @@
+name: module3
+title:
+username:
+account: mikejames
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1291381
+bundleId: 2473652
+url: https://mikejames.shinyapps.io/module3/
+when: 1570373779.36562
