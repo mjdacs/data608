@@ -1,0 +1,150 @@
+<!--
+    
+    Note to Students:
+
+        This is a very short introduction to using Javascript in the browser.
+
+        To see this as a webpage, you have to start a *Local Web Server*. There are many ways to do this: since you all have python installed, we will use python.
+
+        - Open terminal
+
+        - 'cd' into the directory where this html file is (js_in_webpage.html)
+
+        - Type the following into the terminal and hit 'enter':
+            python -m SimpleHTTPServer
+
+            your server should read something like: Serving HTTP on 0.0.0.0 port 8000 ...
+
+        - now go to any browser and type in the HTTP address and the filename: something like:
+
+            http://0.0.0.0:8000/js_in_webpage.html
+
+            or
+
+            http://localhost:8000/js_in_webpage.html
+        
+        - Congrats: you now have a local HTTP server running. Now, every time you change this file and save it, when you reload the browser you will see your changes!
+-->
+
+<head><title>Data 608 Module 5</title></head>
+
+<body>
+
+    <h1>Data 608 - Module 5</h1>
+    <h2>Michael D'Acampora</h2></br>
+    
+    <h2>Part 1</h2>
+    
+    
+    <h4>Problem A</h4>
+    
+    <script type="text/javascript">
+
+    document.write('<p>Enter a word in the box below to see how it looks in reverse!</p>');
+
+    function reverseString(str) {
+        let splitString = str.split("");
+        let reverseArray = splitString.reverse();
+        let joinArray = reverseArray.join("");
+        return joinArray;
+
+    }
+
+    function displayReversal() {
+        let t = document.getElementById("reversal");
+        t.innerHTML = reverseString(document.getElementById('word').value);
+    }
+
+    </script>
+    
+    <form>
+        <input id="word" type="text" size="20">
+        <input type="button" value="reverse me!" onclick="displayReversal();">
+    </form>
+
+    <p></p>
+    
+    <div id="reversal">Your reversed word will show here</div>
+
+    
+    <h4>Problem B</h4>
+
+    <script type="text/javascript">
+    
+    function htmlMultiples(num) {
+        let numArray = [];
+
+        for (let i = 1; i <= 20; i++){
+            numArray.push(num * i);
+        }            
+        arrayToTable(numArray);
+    }
+    
+    function arrayToTable(array) {
+        let counter = 0;
+
+        document.write('<table>'.replace(/</g,'&lt;') + '</br>');
+
+        for (i in array) {
+
+            if (counter <= 3){
+                if (i == 0) document.write('<tr>'.replace(/</g,'&lt;'));
+                document.write('<td>'.replace(/</g,'&lt;') + array[i] + '</td>'.replace(/</g,'&lt;')); 
+                if (i == 3) document.write('</tr>'.replace(/</g,'&lt;') + '</br>');            }
+            
+            else if (counter >= 4 && counter <= 7) {               
+                if (i == 4) document.write('<tr>'.replace(/</g,'&lt;'));
+                document.write('<td>'.replace(/</g,'&lt;') + array[i] + '</td>'.replace(/</g,'&lt;')); 
+                if (i == 7) document.write('</tr>'.replace(/</g,'&lt;') + '</br>');            }
+
+            else if (counter >= 8 && counter <= 11){
+                if (i == 8) document.write('<tr>'.replace(/</g,'&lt;'));
+                document.write('<td>'.replace(/</g,'&lt;') + array[i] + '</td>'.replace(/</g,'&lt;')); 
+                if (i == 11) document.write('</tr>'.replace(/</g,'&lt;') + '</br>');            }
+
+            else if (counter >= 12 && counter <= 15) {
+                if (i == 12) document.write('<tr>'.replace(/</g,'&lt;'));
+                document.write('<td>'.replace(/</g,'&lt;') + array[i] + '</td>'.replace(/</g,'&lt;')); 
+                if (i == 15) document.write('</tr>'.replace(/</g,'&lt;') + '</br>');            }
+
+            else {
+                if (i == 16) document.write('<tr>'.replace(/</g,'&lt;'));
+                document.write('<td>'.replace(/</g,'&lt;') + array[i] + '</td>'.replace(/</g,'&lt;')); 
+                if (i == 19) document.write('</tr>'.replace(/</g,'&lt;') + '</br>');            }
+            
+            counter++;
+        }
+
+        document.write('<table>'.replace(/</g,'&lt;') + '</br>');
+    }
+    
+    function displayHTMLtable() {
+        let t = document.getElementById("target");
+        t.innerHTML = htmlMultiples(document.getElementById('htmlTable').value);
+        
+    }
+    // numArray = htmlMultiples(6);
+    
+        
+ 
+    // document.write(arrayToTable(numArray));
+    
+    </script>
+
+    <!-- <div id="target"></div> -->
+
+
+    <form>
+        <input id="htmlTable" type="number" size="20">
+        <input type="button" value="show the table!" onclick="displayHTMLtable();">
+    </form>
+
+
+
+    <h2>Part 2</h2>
+    <h4>Problem A</h4>
+    <h4>Problem B</h4>
+    
+    
+    
+    </body>
