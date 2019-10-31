@@ -73,11 +73,11 @@
     
     function htmlMultiples(num) {
         let numArray = [];
-        //let i;
+
         for (let i = 1; i <= 20; i++){
             numArray.push(num * i);
         }            
-        return numArray;
+        arrayToTable(numArray);
     }
     
     function arrayToTable(array) {
@@ -89,28 +89,27 @@
 
             if (counter < 4){
                 if (i == 0) document.write('<tr>'.replace(/</g,'&lt;'));
-                document.write('<td>'.replace(/</g,'&lt;')+array[i]+'</td>'.replace(/</g,'&lt;')); 
-                if (i == 3) document.write('</tr>'.replace(/</g,'&lt;') + '</br>');
-            }
+                document.write('<td>'.replace(/</g,'&lt;') + array[i] + '</td>'.replace(/</g,'&lt;')); 
+                if (i == 3) document.write('</tr>'.replace(/</g,'&lt;') + '</br>');            }
             
             else if (counter >= 4 && counter <= 7) {               
                 if (i == 4) document.write('<tr>'.replace(/</g,'&lt;'));
-                document.write('<td>'.replace(/</g,'&lt;')+array[i]+'</td>'.replace(/</g,'&lt;')); 
+                document.write('<td>'.replace(/</g,'&lt;') + array[i] + '</td>'.replace(/</g,'&lt;')); 
                 if (i == 7) document.write('</tr>'.replace(/</g,'&lt;') + '</br>');            }
 
             else if (counter >= 8 && counter <= 11){
                 if (i == 8) document.write('<tr>'.replace(/</g,'&lt;'));
-                document.write('<td>'.replace(/</g,'&lt;')+array[i]+'</td>'.replace(/</g,'&lt;')); 
+                document.write('<td>'.replace(/</g,'&lt;') + array[i] + '</td>'.replace(/</g,'&lt;')); 
                 if (i == 11) document.write('</tr>'.replace(/</g,'&lt;') + '</br>');            }
 
             else if (counter >= 12 && counter <= 15) {
                 if (i == 12) document.write('<tr>'.replace(/</g,'&lt;'));
-                document.write('<td>'.replace(/</g,'&lt;')+array[i]+'</td>'.replace(/</g,'&lt;')); 
+                document.write('<td>'.replace(/</g,'&lt;') + array[i] + '</td>'.replace(/</g,'&lt;')); 
                 if (i == 15) document.write('</tr>'.replace(/</g,'&lt;') + '</br>');            }
 
             else {
                 if (i == 16) document.write('<tr>'.replace(/</g,'&lt;'));
-                document.write('<td>'.replace(/</g,'&lt;')+array[i]+'</td>'.replace(/</g,'&lt;')); 
+                document.write('<td>'.replace(/</g,'&lt;') + array[i] + '</td>'.replace(/</g,'&lt;')); 
                 if (i == 19) document.write('</tr>'.replace(/</g,'&lt;') + '</br>');            }
             
             counter++;
@@ -119,21 +118,26 @@
         document.write('<table>'.replace(/</g,'&lt;') + '</br>');
     }
     
-    // function displayHTMLtable() {
-    //     let t = document.getElementById("htmlTable");
-    //     t.innerHTML = htmlMultiples(document.getElementById('number').value);
-    // }
-    numArray = htmlMultiples(5);
+    function displayHTMLtable() {
+        let t = document.getElementById("target");
+        t.innerHTML = htmlMultiples(document.getElementById('htmlTable').value);
+        
+    }
+    // numArray = htmlMultiples(6);
     
         
  
-    document.write(arrayToTable(numArray));
+    // document.write(arrayToTable(numArray));
     
     </script>
-    <!-- <form>
+
+    <!-- <div id="target"></div> -->
+
+
+    <form>
         <input id="htmlTable" type="number" size="20">
         <input type="button" value="show the table!" onclick="displayHTMLtable();">
-    </form> -->
+    </form>
 
 
 
