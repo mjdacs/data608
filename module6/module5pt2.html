@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html>
+  <head> 
+    <title>Data 608 Module 5 Pt2</title> 
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+  </head>
+
+  <body>
+
+    <h1>Data 608 - Module 5</h1>
+    <h2>Michael D'Acampora </h2>
+    <h2>Part 2</h2>
+    <h4>Write a function to load the presidents.csv data and display the data as an html table (you
+        may use a cdv parser from any available library, though I encourage you to try the d3 one).
+        Now that you have the presidents data loaded, write a function that will return that
+        president’s height & weight when you type it in. This can be typed into either an input box or
+        an alert box, and then print the result in a box or on the webpage.</h4>
+    <p>Type a presidents name to search his height and weight.</p>
+
+    <input type="text" id="myInput" onkeyup="searchAndFilter()" placeholder="Search for names..">
+    <script type='text/javascript' src='script.js'></script>
+
+    <script> 
+
+    function searchAndFilter() {  
+      
+      let input = document.getElementById("myInput");
+      let filter = input.value.toUpperCase();
+      let table = document.getElementById("presidentTable");
+      let tr = table.getElementsByTagName("tr");
+      
+      for (let i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+          if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+    </script>
+
+  </body>
+
+</html>
