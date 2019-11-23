@@ -51,11 +51,11 @@ unique(df$TIME)
 #                                 "02:00:00", "22:00:00" ))
 
 
-# dfdt <- df %>%
-#   filter(
-#           (DATE == "11/16/2019" & TIME %in% c("00:00:00","01:00:00","02:00:00","03:00:00")) |
-#           (DATE == "11/22/2019" & TIME %in% c("20:00:00","21:00:00","22:00:00", "23:00:00"))
-#         )
+dfdt <- df %>%
+  filter(
+          (DATE == "11/16/2019" & TIME %in% c("00:00:00","01:00:00","02:00:00","03:00:00")) |
+          (DATE == "11/22/2019" & TIME %in% c("20:00:00","21:00:00","22:00:00", "23:00:00"))
+        )
 
 
 df_audit1 <- df %>%
@@ -86,25 +86,30 @@ df_audit4 <- df %>%
 #                                                   "01:00:00",
 #                                                   "02:00:00",
 #                                                   "03:00:00") )
-df_audit1
+dfdt
 ```
 ```{r}
 df_audit1
 ```
 ```{r}
-df_audit1 %>% 
+df1 <- df_audit1 %>% 
   mutate(Total_Enter = ENTRIES - lag(ENTRIES, 1),
                 Total_Exit = EXITS - lag(EXITS, 1)) %>% 
   filter(Total_Enter > 0 & DATE == "11/22/2019") %>% 
   group_by(STATION) %>% 
+  filter(STATION != "ALLERTON AV" & !SCP %in% c("00-00-00"),
+         STATION != "125 ST" & !SCP %in% c("00-05-01"),
+         STATION != "WTC-CORTLANDT" & !SCP %in% c("00-03-00","03-00-00","03-00-01","03-00-02")) %>% 
   summarise(Week_Total_Entries = sum(Total_Enter),
             Week_Total_Exits = sum(Total_Exit)) %>% 
   arrange(desc(Week_Total_Entries))
+
+df1
 ```
 ```{r}
 df_audit1 %>% 
   select(SCP, STATION, DATE, TIME, DESC, ENTRIES, EXITS) %>% 
-  filter(STATION == "ALLERTON AV")
+  filter(STATION == "96 ST")
 ```
 
 
@@ -112,7 +117,7 @@ df_audit1 %>%
 df_audit2
 ```
 ```{r}
-df_audit2 %>% 
+df2 <- df_audit2 %>% 
   mutate(Total_Enter = ENTRIES - lag(ENTRIES, 1),
                 Total_Exit = EXITS - lag(EXITS, 1)) %>% 
   filter(Total_Enter > 0 & DATE == "11/22/2019") %>% 
@@ -120,6 +125,8 @@ df_audit2 %>%
   summarise(Week_Total_Entries = sum(Total_Enter),
             Week_Total_Exits = sum(Total_Exit)) %>% 
   arrange(desc(Week_Total_Entries))
+
+df2
 ```
 
 
@@ -128,7 +135,7 @@ df_audit3
 ```
 
 ```{r}
-df_audit3 %>% 
+df3 <- df_audit3 %>% 
   mutate(Total_Enter = ENTRIES - lag(ENTRIES, 1),
                 Total_Exit = EXITS - lag(EXITS, 1)) %>% 
   filter(Total_Enter > 0 & DATE == "11/22/2019") %>% 
@@ -136,20 +143,21 @@ df_audit3 %>%
   summarise(Week_Total_Entries = sum(Total_Enter),
             Week_Total_Exits = sum(Total_Exit)) %>% 
   arrange(desc(Week_Total_Entries))
+
+df3
 ```
 
 ```{r}
 df_audit4
 ```
 ```{r}
-df_audit4 %>% 
+df4 <- df_audit4 %>% 
   mutate(Total_Enter = ENTRIES - lag(ENTRIES, 1),
                 Total_Exit = EXITS - lag(EXITS, 1)) %>% 
   filter(Total_Enter > 0 & DATE == "11/22/2019") %>% 
   group_by(STATION) %>%
   filter(STATION != "42 ST-PORT AUTH" & !SCP %in% c("00-00-08", "00-00-09"),
          STATION != "RECTOR ST" & !SCP %in% c("01-03-00", "01-06-00"),
-         STATION != "ALLERTON AV" & !SCP %in% c("00-00-00"),
          STATION != "47-50 STS ROCK" & !SCP %in% 
                            c("02-06-00","02-06-01",
                              "02-03-00","02-03-01","02-03-02","02-03-03",
@@ -161,6 +169,8 @@ df_audit4 %>%
   summarise(Week_Total_Entries = sum(Total_Enter),
             Week_Total_Exits = sum(Total_Exit)) %>% 
   arrange(desc(Week_Total_Entries))
+
+df4
 ```
 ```{r}
 df_audit4 %>% 
@@ -169,14 +179,12 @@ df_audit4 %>%
 ```
 
 ```{r}
-dfdt %>% 
-  mutate(Total_Enter = ENTRIES - lag(ENTRIES, 1),
-                Total_Exit = EXITS - lag(EXITS, 1)) %>% 
-  filter(Total_Enter > 0 & DATE == "11/22/2019") %>% 
-  group_by(STATION) %>% 
-  filter(STATION != "42 ST-PORT AUTH" & !SCP %in% c("00-00-08", "00-00-09")) %>% 
-  summarise(Week_Total_Entries = sum(Total_Enter),
-            Week_Total_Exits = sum(Total_Exit)) %>% 
+
+clean_df <- bind_rows(df1, df2, df3, df4)
+
+clean_df %>% group_by(STATION) %>% 
+  summarise(Week_Total_Entries = sum(Week_Total_Entries),
+            Week_Total_Exits = sum(Week_Total_Exits)) %>% 
   arrange(desc(Week_Total_Entries))
 
 ```
