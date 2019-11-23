@@ -199,20 +199,6 @@ dfdt %>% filter(STATION == "RECTOR ST") %>%
 
 
 
-
-```{r}
-         (DATE == "11/16/2019" & TIME == "03:00:00") | (DATE == "11/22/2019" & TIME == "23:00:00")) %>%
-  mutate(Total_Enter = ENTRIES - lag(ENTRIES, 1),
-         Total_Exit =  EXITS - lag(EXITS, 1)) %>%
-  filter(Total_Enter > 0 & DATE == "07/06/2018") %>%
-  group_by(STATION) %>%
-  summarise(Week_Total_Entries = sum(Total_Enter),
-            Week_Total_Exits = sum(Total_Exit)) %>%
-  mutate(Difference = Week_Total_Entries - Week_Total_Exits) %>% 
-  filter(STATION != "LEXINGTON AV/63" & STATION != "BEACH 44 ST") %>%
-  arrange(desc(Week_Total_Entries)) 
-```
-
 ```{r}
 data_viz <- data2[1:20,] %>% arrange(desc(Week_Total_Entries))
 ```
