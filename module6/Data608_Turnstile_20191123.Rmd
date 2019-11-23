@@ -182,7 +182,7 @@ df_audit4 %>%
 
 clean_df <- bind_rows(df1, df2, df3, df4)
 
-clean_df %>% group_by(STATION) %>% 
+clean_df <- clean_df %>% group_by(STATION) %>% 
   summarise(Week_Total_Entries = sum(Week_Total_Entries),
             Week_Total_Exits = sum(Week_Total_Exits)) %>% 
   arrange(desc(Week_Total_Entries))
@@ -200,10 +200,10 @@ dfdt %>% filter(STATION == "RECTOR ST") %>%
 
 
 ```{r}
-data_viz <- data2[1:20,] %>% arrange(desc(Week_Total_Entries))
+data_viz <- clean_df[1:20,] %>% arrange(desc(Week_Total_Entries))
 ```
 
-```{r message=FALSE}
+```{r message=FALSE, fig.width=8.75}
 
 ggplot(data_viz, aes(x = reorder(STATION, Week_Total_Entries), y = Week_Total_Entries)) +
   geom_bar(stat = "identity", fill = "navy", width = .5) +
@@ -212,20 +212,44 @@ ggplot(data_viz, aes(x = reorder(STATION, Week_Total_Entries), y = Week_Total_En
     coord_flip() +
   scale_y_continuous(labels = scales::comma) +
   theme(text = element_text(size = 10)) +
-  labs(title = "20 Stations for Week Ending 7/6/2018",
-       subtitle = "Total turnstile entries at each station. Data courtesty of mta.info",
+  labs(title = "The 20 Busiest NYC Subway Stations by Entry",
+       subtitle = "One week period 11/16/2019-11/22/2019. Data courtesty of mta.info",
        caption = "mdac",
        x = "Station",
        y = "Entries per station") 
   
 ggsave("mdacplot.png")
 ```
+```{r}
+data_viz_hi <- head(clean_df,20) %>% 
+  mutate(Total_Traffic = Week_Total_Entries + Week_Total_Exits) %>% 
+  select(STATION, Total_Traffic) %>% 
+  arrange(desc(Total_Traffic))
+
+data_viz_hi
+```
+```{r message=FALSE, fig.width=10}
+ggplot(data_viz_hi, aes(x = reorder(STATION, Total_Traffic), y = Total_Traffic)) +
+  geom_bar(stat = "identity", fill = "navy", width = .5) +
+  geom_text(aes(label=Total_Traffic),
+            position=position_dodge(width = 0.1), hjust = -0.03, vjust = 0.5, size = 2.5) +
+    coord_flip() +
+  scale_y_continuous(labels = scales::comma) +
+  theme(text = element_text(size = 10)) +
+  labs(title = "The 20 Busiest NYC Subway Stations by Total Turnstile Count",
+       subtitle = "Total entries and exits for the one week period 11/16/2019-11/22/2019. Data courtesty of mta.info",
+       caption = "mdac",
+       x = "Station",
+       y = "Entries per station") 
+  
+ggsave("total_hi.png")
+```
 
 ```{r}
-data_viz_low <- tail(data2,20) %>% 
-  mutate(Total_traffic = Week_Total_Entries + Week_Total_Exits) %>% 
-  select(STATION, Total_traffic) %>% 
-  arrange(Total_traffic)
+data_viz_low <- tail(clean_df,20) %>% 
+  mutate(Total_Traffic = Week_Total_Entries + Week_Total_Exits) %>% 
+  select(STATION, Total_Traffic) %>% 
+  arrange(Total_Traffic)
 
 data_viz_low
 ```
