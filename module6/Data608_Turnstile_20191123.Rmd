@@ -5,12 +5,17 @@ output: html_notebook
 
 ```{r}
 library(tidyverse)
-
+library(stringr) 
 data <- read_csv("http://web.mta.info/developers/data/nyct/turnstile/turnstile_191123.txt") 
 ```
 ```{r}
 dim(data)
 ```
+```{r}
+colnames(data)
+```
+
+
 
 ```{r}
 sapply(data, function(x) sum(is.na(x)))
@@ -26,15 +31,18 @@ df
 
 ```{r}
 df$TIME <- as.character(df$TIME)
-df$ENTRIES <- as.numeric(df$ENTRIES)
-df$EXITS <- as.numeric(df$EXITS)
-df 
+df$ENTRIES <- as.integer(df$ENTRIES)
+df$EXITS <- as.integer(df$EXITS)
+head(df) 
 ```
 
 Now that structure is understood, get the head of the data set. The first six rows are displayed to give you a snapshot. 
 
 ```{r}
 unique(df$TIME)
+```
+```{r}
+df %>% filter(STATION == "ATL AV-BARCLAY")
 ```
 
 
@@ -148,7 +156,8 @@ df3
 ```
 
 ```{r}
-df_audit4
+df_audit4 %>% select(STATION, LINENAME) 
+
 ```
 ```{r}
 df4 <- df_audit4 %>% 
@@ -182,19 +191,14 @@ df_audit4 %>%
 
 clean_df <- bind_rows(df1, df2, df3, df4)
 
-clean_df <- clean_df %>% group_by(STATION) %>% 
+clean_entr <- clean_df %>% group_by(STATION) %>% 
   summarise(Week_Total_Entries = sum(Week_Total_Entries),
             Week_Total_Exits = sum(Week_Total_Exits)) %>% 
   arrange(desc(Week_Total_Entries))
 
 ```
 ```{r}
-dfdt %>% filter(STATION == "RECTOR ST") %>% 
-  mutate(Total_Enter = ENTRIES - lag(ENTRIES, 1),
-                Total_Exit = EXITS - lag(EXITS, 1)) 
-  # filter(Total_Enter > 0 & DATE == "11/22/2019") %>% 
-  # summarise(Week_Total_Entries = sum(Total_Enter),
-  #           Week_Total_Exits = sum(Total_Exit))
+clean_df
 ```
 
 
@@ -223,7 +227,7 @@ ggsave("mdacplot.png")
 ```{r}
 data_viz_hi <- head(clean_df,20) %>% 
   mutate(Total_Traffic = Week_Total_Entries + Week_Total_Exits) %>% 
-  select(STATION, Total_Traffic) %>% 
+  select(STATION,Total_Traffic) %>% 
   arrange(desc(Total_Traffic))
 
 data_viz_hi
@@ -277,24 +281,38 @@ ggplot(data_viz_low, aes(x = reorder(STATION, -Total_traffic), y = Total_traffic
 ggsave("mdacplot2.png")
 ```
 
-
 ```{r}
-library(tidyverse)
-library(lubridate)
-dk <- read_csv("http://web.mta.info/developers/data/nyct/turnstile/turnstile_191123.txt")
-
-dk<- dk %>% mutate(DATE = mdy(DATE),
-                        ENTRIES = as.integer(ENTRIES),
-                        EXITS = as.integer(EXITS))
-
-```
-```{r}
-str(dk)
+unique(data$LINENAME)
 ```
 
 
 ```{r}
-dk %>% 
-  filter(DATE == mdy("11/16/2019") & TIME <= "03:00:00" & TIME > "00:00:00")
+station_sets = unique(data$LINENAME)
+stations <- c()
+for (i in station_sets) {
+  if (str_length(i) == 1) {
+    stations = c(stations, i)
+  }
+}
+
+stations
+```
+
+```{r}
+
+for (i in stations) {
+  if i in clean_df$STATION {
+    
+  }
+}
+
+```
+```{r}
+names = df %>% select(STATION, LINENAME, ENTRIES) %>% group_by(STATION, LINENAME) %>% summarise(avg.entries = mean(ENTRIES))
+names
+```
+
+```{r}
+map(names$STATION, names$LINENAME)
 ```
 
