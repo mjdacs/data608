@@ -25,15 +25,15 @@ sapply(data, function(x) sum(is.na(x)))
 unique(data$DIVISION)
 ```
 ```{r}
-df <- data %>% filter(DIVISION %in% c("BMT", "IND", "IRT"))
-df
+df <- data %>% filter(DIVISION %in% c("BMT", "IND", "IRT")) %>% 
+  mutate(TIME = as.character(TIME),
+        ENTRIES = as.integer(ENTRIES),
+        EXITS = as.integer(EXITS))
+head(df)
 ```
 
 ```{r}
-df$TIME <- as.character(df$TIME)
-df$ENTRIES <- as.integer(df$ENTRIES)
-df$EXITS <- as.integer(df$EXITS)
-head(df) 
+
 ```
 
 Now that structure is understood, get the head of the data set. The first six rows are displayed to give you a snapshot. 
@@ -191,20 +191,20 @@ df_audit4 %>%
 
 clean_df <- bind_rows(df1, df2, df3, df4)
 
-clean_entr <- clean_df %>% group_by(STATION) %>% 
+total.by.station <- clean_df %>% group_by(STATION) %>% 
   summarise(Week_Total_Entries = sum(Week_Total_Entries),
             Week_Total_Exits = sum(Week_Total_Exits)) %>% 
   arrange(desc(Week_Total_Entries))
 
 ```
 ```{r}
-clean_df
+total.by.station
 ```
 
 
 
 ```{r}
-data_viz <- clean_df[1:20,] %>% arrange(desc(Week_Total_Entries))
+data_viz <- clean_entr[1:20,] %>% arrange(desc(Week_Total_Entries))
 ```
 
 ```{r message=FALSE, fig.width=8.75}
@@ -225,7 +225,7 @@ ggplot(data_viz, aes(x = reorder(STATION, Week_Total_Entries), y = Week_Total_En
 ggsave("mdacplot.png")
 ```
 ```{r}
-data_viz_hi <- head(clean_df,20) %>% 
+data_viz_hi <- head(clean_entr,20) %>% 
   mutate(Total_Traffic = Week_Total_Entries + Week_Total_Exits) %>% 
   select(STATION,Total_Traffic) %>% 
   arrange(desc(Total_Traffic))
@@ -263,56 +263,125 @@ data_viz_low
 
 ```{r message = FALSE}
 
-ggplot(data_viz_low, aes(x = reorder(STATION, -Total_traffic), y = Total_traffic)) +
+graph.it <- function(df, col_order, title_phrase) {
+  ggplot(df, aes(x = reorder(STATION, col_order), y = Total_Traffic)) +
   geom_bar(stat = "identity", fill = "navy", width = .5) +
-  geom_text(aes(label = Total_traffic),
+  geom_text(aes(label = Total_Traffic),
             position = position_dodge(width = 0.1), hjust = -0.03, vjust = 0.5, size = 2.5) +
   coord_flip() +
   scale_y_continuous(labels = scales::comma) +
   theme(text = element_text(size = 10)) +
-  labs(title = "20 Slowest Stations for Week Ending 7/6/2018",
+  labs(title = paste("20", title_phrase, "Stations for Week Ending 7/6/2018"),
        subtitle = "Total turnstile entries and exits. Data courtesty of mta.info",
        caption = "mdac",
        x = "Station",
        y = "Entries per station") 
   
+}
 
-
-ggsave("mdacplot2.png")
+graph.it(data_viz_hi, data_viz_hi$Total_Traffic, "Busiest")
+#ggsave("total_low.png")
 ```
 
 ```{r}
 unique(data$LINENAME)
 ```
 
+```{r}
+library(ggmap)
+ggmap::register_google(key = "AIzaSyBGG-iWfOe7K8xqcUwcZiNRTfBiJFEt474")
+```
+```{r}
+incidents= read.csv('https://raw.githubusercontent.com/lgellis/MiscTutorial/master/ggmap/i2Sample.csv', stringsAsFactors = FALSE)
+
+n <- read.csv('https://raw.githubusercontent.com/lgellis/MiscTutorial/master/ggmap/n.csv', stringsAsFactors = FALSE)
+```
+
 
 ```{r}
-station_sets = unique(data$LINENAME)
-stations <- c()
-for (i in station_sets) {
-  if (str_length(i) == 1) {
-    stations = c(stations, i)
-  }
-}
+paste(dim(incidents), dim(n))
+```
 
-stations
+
+```{r}
+head(incidents
+     )
+```
+
+
+```{r}
+head(n)
+```
+
+
+```{r}
+attach(incidents)
+attach(n)
 ```
 
 ```{r}
+col1 = "#011f4b"
 
-for (i in stations) {
-  if i in clean_df$STATION {
-    
-  }
-}
+col2 = "#6497b1"
 
+col3 = "#b3cde0"
+
+col4 = "#CC0000"
 ```
-```{r}
-names = df %>% select(STATION, LINENAME, ENTRIES) %>% group_by(STATION, LINENAME) %>% summarise(avg.entries = mean(ENTRIES))
-names
-```
+
 
 ```{r}
-map(names$STATION, names$LINENAME)
+library(lubridate)
+incidents$ymd <-mdy_hms(Event.Clearance.Date)
+incidents$year <- year(incidents$ymd)
+
+#Create a more manageable data frame with only 2017 and 2018 data
+i2 <- incidents %>% 
+  filter(year>=2017 & year<=2018)
+
+#Only include complete cases
+i2[complete.cases(i2), ]
+
+#create a display label to the n data frame (dangerous neighbourhoods)
+n$label <-paste(Rank, Location, sep="-")
 ```
+```{r}
+p <- ggmap(get_googlemap(center = c(lon = -122.335167, lat = 47.608013),
+                    zoom = 11, scale = 2,
+                    maptype ='terrain',
+                    color = 'color'))
+p + geom_point(aes(x = Longitude, y = Latitude,  colour = Initial.Type.Group), data = i2, size = 0.5) + 
+  theme(legend.position="bottom")
+```
+
+```{r}
+sbwy <- read_csv("subway_gpscoords.csv")
+head(sbwy,11)
+```
+
+
+```{r}
+options(digits = 14)
+
+sbwy.coords <- sbwy %>% 
+  mutate(
+    LONG = as.numeric(str_extract(the_geom, "-\\d{2}\\.\\d+")),
+    LAT = as.numeric(str_extract(the_geom, " \\d{2}\\.\\d+")))  %>%  
+  rename(STATION = NAME) %>% 
+  select(STATION, LONG, LAT)
+
+sbwy.coords %>% arrange(STATION)
+```
+
+
+```{r}
+station.gps <- merge(total.by.station, sbwy.coords)
+total.by.station
+```
+
+
+```{r}
+```
+
+
 
